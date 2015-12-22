@@ -12,6 +12,7 @@ var fs = require('fs');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 var mongoose = require('mongoose');
+var onlineUsers = [];
 
 var cors = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -68,34 +69,40 @@ var schema = new mongoose.Schema({
 });
 var User = mongoose.model('User', schema);
 
-app.get('/users', cors, function(req, res) {
-  var query = User.find({}, {name: 1, email: 1, registrationDate: 1, age: 1, role: 1, score: 1, _id: 0});
-  query.exec((err, docs) => {
+app.get('/getUsers', function(req, res) {
+  console.log('REQUEST RECEIVED');
+  User.find({}, {name: 1, registrationDate: 1, email: 1, score: 1, role: 1 }).lean().exec((err, docs) => {
     if (err) {
       res.status(503).send('greska u konekciji sa bazom');
-      console.log('GRESKA U BAZI!!!');
+      console.log('DB ERROR!!!');
     } else {
-      res.status(200).send(docs);
+      var response = [];
+      for (let i = 0; i < docs.length; i++) {
+        console.log('USER: ' + docs[i].name);
+        response.push(docs[i]);
+      }
+      res.status(200).send(response);
       console.log('USERS SUCCESSFULLY SENT!!!');
     }
   });
 });
 
 // user login
-app.post('/login', cors, function(req, res) {
+app.post('/login', function(req, res) {
+  console.log('SUCCESSFULLY RECEIVED USERS INFO' + req.body);
   const user = req.body;
-  console.log('successfully received user info' + user);
   var query = User.findOne({name: user.name}, {name: 1, password: 1});
   query.exec((err, userObj) => {
     if (err) {
       res.status(404).send('user nije registrovan');
       console.log(err);
     } else {
-      if (userObj.name === user.name && userObj.password === user.password) {
+      if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
         res.status(200).send('uspesno logovan!');
-        console.log('200 OK!!!');
+        onlineUsers.push(userObj.name);
+        console.log(onlineUsers[0]);
       } else {
-        res.status(404).send('user nije registrovan!');
+        res.status(404).send('user nije loginovan!');
         console.log('404 NOT FOUND!!!');
       }
     }
@@ -107,20 +114,20 @@ app.post('/register', cors, function(req, res) {
   let found = false;
   const user = req.body;
   console.log('successfully received user info' + user);
-  var query = User.find({}, {});
-  query.exec((err, docs) => {
+  User.find({}, {}).lean().exec((err, docs) => {
     if (err) {
       res.status(503).send('greska u bazi!');
       console.log('DB CONNECTION ERROR!!!');
     } else {
-      console.log('USERS IN DB ARE: ' + docs);
-      docs.foreach(dbUser => {
-        if (dbUser.name === user.name) {
+      if (docs.length > 0) {
+        for (let i = 0; i < docs.length; i++) {
+          console.log('USER IN DB: ' + docs[i].name);
+        if (docs[i].name === user.name) {
           console.log('USER ALLREADY IN DB!!!');
           found = true;
-          return;
         }
-      });
+        }
+      	}
       if (!found) {
         var newUser = new User({
           name: user.name,
@@ -131,16 +138,21 @@ app.post('/register', cors, function(req, res) {
         newUser.save(function(err1, userObj) {
           if (err1) {
             console.log(err1);
-            res.status(503).send('nije registrovan');
+            res.status(503).send('ERROR');
           } else {
             res.status(200).send('uspesno registrovan');
-            console.log(userObj + ' has been added in db!!!');
+            console.log(userObj.name + ' has been added in db!!!');
           }
-        }); 
+        });
+      } else {
+        res.status(401).send('nije registrovan');
+        console.log('ALLREADY IN DB');
       }
     }
   });
 });
+
+//LOGING OUT
 
 app.listen(port, '0.0.0.0', function onStart(err) {
   if (err) {

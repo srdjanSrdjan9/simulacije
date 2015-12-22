@@ -28,6 +28,7 @@
   "dependencies": {
     "body-parser": "^1.14.1",
     "fs": "0.0.2",
+    "mongod": "^1.3.0",
     "mongodb": "^2.0.52",
     "monk": "^1.0.1",
     "path": "^0.12.7",
