@@ -61,7 +61,7 @@ mongoose.connect('mongodb://localhost/users');
 var schema = new mongoose.Schema({
   name: String,
   registrationDate: {type: Date, default: Date.now},
-  role: {type: Number, min: 0, max: 1},
+  role: {type: Number, min: 0, max: 1, default: 0},
   age: {type: Number, min: 0},
   email: String,
   score: {type: Number, min: 0},
@@ -91,6 +91,14 @@ app.get('/getUsers', function(req, res) {
 app.post('/login', function(req, res) {
   console.log('SUCCESSFULLY RECEIVED USERS INFO' + req.body);
   const user = req.body;
+  onlineUsers.forEach((u) => {
+    if (u === user.name) {
+      res.status(400).send('user je vec loginovan!');
+      console.log('ALLREADY LOGIN!!!');
+      return;
+    }
+  });
+
   var query = User.findOne({name: user.name}, {name: 1, password: 1});
   query.exec((err, userObj) => {
     if (err) {
@@ -100,7 +108,7 @@ app.post('/login', function(req, res) {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
         res.status(200).send('uspesno logovan!');
         onlineUsers.push(userObj.name);
-        console.log(onlineUsers[0]);
+        console.log(onlineUsers[0] + ' is online now!');
       } else {
         res.status(404).send('user nije loginovan!');
         console.log('404 NOT FOUND!!!');
@@ -110,7 +118,7 @@ app.post('/login', function(req, res) {
 });
 
 // registering user
-app.post('/register', cors, function(req, res) {
+app.post('/register', function(req, res) {
   let found = false;
   const user = req.body;
   console.log('successfully received user info' + user);
@@ -152,28 +160,28 @@ app.post('/register', cors, function(req, res) {
   });
 });
 
-//GENERATING REPORT
-app.get('/getReport', cors, function (req, res) {
+// GENERATING REPORT
+app.get('/getReport', function (req, res) {
   fs.readFile(path.join(__dirname, 'templates', 'template1.xlsx'), function(err, data) {
     var template = new Xlsx(data);
     var values = {
       users: []
     };
 
-    User.find({}, {name: 1, email: 1, registrationDate: 1, score: 1, role: 1}).lean().exec((err, users) => {
-      if (err) {
+    User.find({}, {name: 1, email: 1, registrationDate: 1, score: 1, role: 1}).lean().exec((err1, users) => {
+      if (err1) {
         res.status(404).send('can not get report!');
-    		console.log('DB ERROR');
-    	} else {
+        console.log('DB ERROR');
+      } else {
         users.map(user => {
-       let user1 = {};
-        user1.name = user.name;
-        user1.email = user.email;
-        user1.score = user.score;
-        user1.registrationDate = user.registrationDate;
-        values.users.push(user1);
-      });
-     }
+          const user1 = {};
+          user1.name = user.name;
+          user1.email = user.email;
+          user1.score = user.score;
+          user1.registrationDate = user.registrationDate;
+          values.users.push(user1);
+        });
+      }
     });
 
     const sheetNumber = 1;
@@ -184,7 +192,34 @@ app.get('/getReport', cors, function (req, res) {
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.status(200).send(new Buffer(data1, 'binary'));
     console.log('REPORT SUCCESSFULLY SENT!');
+  });
 });
+
+// LOGING OUT
+app.post('/logout', function(req, res) {
+  console.log('LOGOUT REQUES RECEIVED');
+  const user = req.body;
+  onlineUsers.forEach((u) => {
+    if (u === user.name) {
+      if (onlineUsers.indexOf(u) > -1) {
+        onlineUsers.splice(onlineUsers.indexOf(u), 1);
+        res.status(200).send('user je logoutovan!');
+        console.log(user.name + ' vise nije online');
+      }
+    }
+  });
+});
+
+// DEELTING ALL USERS, NOT ADMINS
+app.delete('/deleteAllUsers', function(req, res) {
+  User.remove({role: 0}, (err) => {
+    if (err) {
+      res.send(500).send('error in db');
+      console.log('ERROR in db!!!');
+    } else {
+      res.status(200).send('svi korisnici su izbrisani');
+    }
+  });
 });
 
 app.listen(port, '0.0.0.0', function onStart(err) {
