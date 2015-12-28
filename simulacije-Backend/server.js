@@ -5,8 +5,6 @@ import webpackMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from './webpack.config.js';
 
-
-
 var bodyParser = require('body-parser');
 var Xlsx = require('xlsx-template');
 var fs = require('fs');
@@ -88,8 +86,8 @@ app.get('/getUsers', function(req, res) {
 });
 
 // user login
-app.post('/login', function(req, res) {
-  console.log('SUCCESSFULLY RECEIVED USERS INFO' + req.body);
+app.post('/login', cors, function(req, res) {
+   console.log('SUCCESSFULLY RECEIVED USERS INFO ' + req.body.name);
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
@@ -141,7 +139,8 @@ app.post('/register', function(req, res) {
           name: user.name,
           age: user.age,
           email: user.email,
-          password: user.password
+          password: user.password,
+          role: 1
         });
         newUser.save(function(err1, userObj) {
           if (err1) {
