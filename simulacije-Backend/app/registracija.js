@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './App.css';
+var promise = require('promise');
+//var fetch = require('fetch');
 
 export default class App extends React.Component {
   constructor(props) {
@@ -7,20 +9,19 @@ export default class App extends React.Component {
     this.state = {test: 'foo'};
   }
  
-register(e) {
-	e.preventDefault();
-
-}
 
 
-
-  save(e){
+  register(e){
   	e.preventDefault();
-  	var username = this.refs.username.value;
+  	var name = this.refs.name.value;
   	var password = this.refs.password.value;
+    var age = this.refs.age.value;
+    var email = this.refs.email.value;
   	var dataSend ={
   		"name": username,
-  		"password": password
+  		"password": password,
+      "age":age,
+      "email":email
   	};
   	var data = '' + JSON.stringify(dataSend);
   	console.log(data);
@@ -34,18 +35,19 @@ register(e) {
             if (response.status >= 200 && response.status < 300) {
                 return response;
             } else {
-                var error = new Error("Niste uspesno logovani, registrujte se !!!");
+                var error = new Error("Niste uspesno registrovali, pokusajte ponovo !!!");
                 error.response = response;
                 throw error;
             }
         })
   	.then((response) => {
-  		alert("Uspesno ste ulogovani, mozete da igrate igru!");
-      window.location.href="../mario/index.html";
+  		alert("Uspesno ste se registrovali");
+      window.location.href="./App.js";
   	})
   	.catch((err)=>{
   		 alert(err);
-       window.location.href="./registracija.js";
+       location.reload();
+       
   	});
   }
 
@@ -53,11 +55,12 @@ register(e) {
     return (
       <div className={styles.app}>
         <form >
-        	<input type = "text" ref = "username" placeholder = "Username" />       	
+        	<input type = "text" ref = "name" placeholder = "Ime" />        	
         	<input type = "password" ref = "password" placeholder = "Password" />
+          <input type = "text" ref = "age" placeholder = "Godine" />  
+          <input type = "email" ref = "email" placeholder = "Email" />  
         </form>
-        <button type = "button" onClick = {this.save.bind(this)} >Login </button>
-        //<button type = "button" onClick = {this.register.bind(this)} >Register </button>
+        <button type = "button" onClick = {this.register.bind(this)} >Register </button>
       </div>
     );
   }
