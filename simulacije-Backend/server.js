@@ -67,6 +67,8 @@ var schema = new mongoose.Schema({
 });
 var User = mongoose.model('User', schema);
 
+// TODO:create authorization logic
+
 app.get('/getUsers', function(req, res) {
   console.log('REQUEST RECEIVED');
   User.find({}, {name: 1, registrationDate: 1, email: 1, score: 1, role: 1 }).lean().exec((err, docs) => {
@@ -159,7 +161,7 @@ app.post('/register', function(req, res) {
 });
 
 // GENERATING REPORT
-app.get('/getReport', function (req, res) {
+app.get('/getReport', function(req, res) {
   fs.readFile(path.join(__dirname, 'templates', 'template1.xlsx'), function(err, data) {
     var template = new Xlsx(data);
     var values = {
@@ -171,7 +173,7 @@ app.get('/getReport', function (req, res) {
         res.status(404).send('can not get report!');
         console.log('DB ERROR');
       } else {
-        users.map(user => {
+        users.forEach	(user => {
           const user1 = {};
           user1.name = user.name;
           user1.email = user.email;
@@ -195,7 +197,7 @@ app.get('/getReport', function (req, res) {
 
 // LOGING OUT
 app.post('/logout', function(req, res) {
-  console.log('LOGOUT REQUES RECEIVED');
+  console.log('LOGOUT REQUEST RECEIVED');
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
