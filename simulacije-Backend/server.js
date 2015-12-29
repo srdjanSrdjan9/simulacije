@@ -62,13 +62,13 @@ var schema = new mongoose.Schema({
   role: {type: Number, min: 0, max: 1, default: 0},
   age: {type: Number, min: 0},
   email: String,
-  score: {type: Number, min: 0},
+  score: {type: Number},
   password: String
 });
 var User = mongoose.model('User', schema);
 
 // TODO:create authorization logic
-
+// geting all users info TESTED
 app.get('/getUsers', function(req, res) {
   console.log('REQUEST RECEIVED');
   User.find({}, {name: 1, registrationDate: 1, email: 1, score: 1, role: 1 }).lean().exec((err, docs) => {
@@ -87,7 +87,7 @@ app.get('/getUsers', function(req, res) {
   });
 });
 
-// user login
+// user login TESTED
 app.post('/login', cors, function(req, res) {
    console.log('SUCCESSFULLY RECEIVED USERS INFO ' + req.body.name);
   const user = req.body;
@@ -106,7 +106,7 @@ app.post('/login', cors, function(req, res) {
       console.log(err);
     } else {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
-        res.status(200).send('uspesno logovan!');
+        res.status(200).send(userObj.role);
         onlineUsers.push(userObj.name);
         console.log(onlineUsers[0] + ' is online now!');
       } else {
@@ -117,7 +117,7 @@ app.post('/login', cors, function(req, res) {
   });
 });
 
-// registering user
+// registering user TESTED
 app.post('/register', function(req, res) {
   let found = false;
   const user = req.body;
@@ -142,7 +142,8 @@ app.post('/register', function(req, res) {
           age: user.age,
           email: user.email,
           password: user.password,
-          role: 1
+          role: user.role,
+          score: 0
         });
         newUser.save(function(err1, userObj) {
           if (err1) {
@@ -211,15 +212,45 @@ app.post('/logout', function(req, res) {
   });
 });
 
-// DEELTING ALL USERS, NOT ADMINS
+// DEELTING ALL USERS TESTED
 app.delete('/deleteAllUsers', function(req, res) {
-  User.remove({role: 0}, (err) => {
-    if (err) {
-      res.send(500).send('error in db');
-      console.log('ERROR in db!!!');
-    } else {
-      res.status(200).send('svi korisnici su izbrisani');
-    }
+	console.log('delete request received');
+  User.find({}).remove(function(err){
+  	if(!err) {
+  		console.log('deleted');
+  		res.status(200).send('obrisani');
+  	} else {
+  		res.status(503).send('greska');
+  	}
+  });
+});
+
+// USER SCORE UPDATE TESTED
+app.post('/updateScore', function(req, res) {
+  var userInfo = req.body;
+      	  var score = userInfo.score;
+  onlineUsers.forEach((u) => {
+    if (u === userInfo.name) {
+      User.findOne({name: userInfo.name}).lean().exec((err, user) => {
+        if (!err) {
+   			score += user.score;
+   			console.log('nasao korisnika ' + user.name);
+   			console.log('stari score  ' + user.score);
+    		} else {
+    		  res.status(404).send('nema ga u bazi');
+    		}
+    	});
+      console.log('novi skor ' + score);
+      User.update({ name: userInfo.name }, { $inc: { score: score }}, { multi: true }, (error, numAffected) => {
+      	console.log('broj izmenjenih korisnika ' + numAffected.n);
+      	if (!error && numAffected !== null) {
+      		res.status(200).send('uspesno azuriran');
+      	} else {
+      		res.status(500).send('nije azuriran');
+      	}
+      	console.log(' new score ' + score);
+      });
+  	}
   });
 });
 

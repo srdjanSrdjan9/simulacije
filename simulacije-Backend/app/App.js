@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './App.css';
-var promise = require('promise');
-//var fetch = require('fetch');
 
 export default class App extends React.Component {
   constructor(props) {
@@ -53,7 +51,7 @@ register(e) {
     return (
       <div className={styles.app}>
         <form >
-        	<input type = "text" ref = "username" placeholder = "Username" />        	
+        	<input type = "text" ref = "username" placeholder = "Username" />       	
         	<input type = "password" ref = "password" placeholder = "Password" />
         </form>
         <button type = "button" onClick = {this.save.bind(this)} >Login </button>
