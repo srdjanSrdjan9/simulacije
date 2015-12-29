@@ -1,5 +1,5 @@
 import React from 'react';
-
+import styles from './App.css';
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -7,6 +7,13 @@ export default class Login extends React.Component {
     this.state = {test: 'foo'};
   }
  
+register(e) {
+	e.preventDefault();
+
+}
+
+
+
   save(e){
   	e.preventDefault();
   	var username = this.refs.username.value;
@@ -34,24 +41,23 @@ export default class Login extends React.Component {
         })
   	.then((response) => {
   		alert("Uspesno ste ulogovani, mozete da igrate igru!");
-     
+      window.location.href="../mario/index.html";
   	})
   	.catch((err)=>{
   		 alert(err);
-         	});
+       window.location.href="./registracija.js";
+  	});
   }
 
   render() {
     return (
-      <div>
+      <div className={styles.app}>
         <form >
-        	<input type = "text" ref = "username" placeholder = "Username" />
-           <br/>       	
+        	<input type = "text" ref = "username" placeholder = "Username" />       	
         	<input type = "password" ref = "password" placeholder = "Password" />
-           <br/> 
         </form>
         <button type = "button" onClick = {this.save.bind(this)} >Login </button>
-        
+        //<button type = "button" onClick = {this.register.bind(this)} >Register </button>
       </div>
     );
   }

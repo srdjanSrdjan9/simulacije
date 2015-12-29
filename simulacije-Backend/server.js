@@ -107,6 +107,7 @@ app.post('/login', cors, function(req, res) {
     } else {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
         res.status(200).send(userObj.role);
+        // res.sendFile(path.join(__dirname, './'));
         onlineUsers.push(userObj.name);
         console.log(onlineUsers[0] + ' is online now!');
       } else {

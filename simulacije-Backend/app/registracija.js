@@ -1,9 +1,9 @@
 import React from 'react';
-import styles from './App.css';
+
 var promise = require('promise');
 //var fetch = require('fetch');
 
-export default class App extends React.Component {
+export default class Registracija extends React.Component {
   constructor(props) {
     super(props);
     this.state = {test: 'foo'};
@@ -13,19 +13,20 @@ export default class App extends React.Component {
 
   register(e){
   	e.preventDefault();
-  	var name = this.refs.name.value;
+  	var name = this.refs.ime.value;
   	var password = this.refs.password.value;
     var age = this.refs.age.value;
     var email = this.refs.email.value;
   	var dataSend ={
-  		"name": username,
+  		"name": name,
   		"password": password,
       "age":age,
-      "email":email
+      "email":email,
+      "role": 0
   	};
   	var data = '' + JSON.stringify(dataSend);
   	console.log(data);
-  	fetch('http://localhost:3000/login', {
+  	fetch('http://localhost:3000/register', {
 		method:'post',
 		headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +43,6 @@ export default class App extends React.Component {
         })
   	.then((response) => {
   		alert("Uspesno ste se registrovali");
-      window.location.href="./App.js";
   	})
   	.catch((err)=>{
   		 alert(err);
@@ -53,12 +53,16 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className={styles.app}>
+      <div >
         <form >
-        	<input type = "text" ref = "name" placeholder = "Ime" />        	
+        	<input type = "text" ref = "ime" placeholder = "Ime" />
+          <br/>       	
         	<input type = "password" ref = "password" placeholder = "Password" />
-          <input type = "text" ref = "age" placeholder = "Godine" />  
-          <input type = "email" ref = "email" placeholder = "Email" />  
+           <br/>
+          <input type = "number" min = "10" max = "100" ref = "age" placeholder = "Godine" /> 
+           <br/> 
+          <input type = "email" ref = "email" placeholder = "Email" />
+           <br/>
         </form>
         <button type = "button" onClick = {this.register.bind(this)} >Register </button>
       </div>
