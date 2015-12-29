@@ -11,7 +11,7 @@ export default class App extends React.Component {
  
 register(e) {
 	e.preventDefault();
-	
+
 }
 
   save(e){
