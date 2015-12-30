@@ -6,12 +6,6 @@ export default class Login extends React.Component {
     super(props);
     this.state = {test: 'foo'};
   }
- 
-register(e) {
-	e.preventDefault();
-
-}
-
 
 
   save(e){
@@ -41,23 +35,24 @@ register(e) {
         })
   	.then((response) => {
   		alert("Uspesno ste ulogovani, mozete da igrate igru!");
-      window.location.href="../mario/index.html";
+     window.location.href ="http://www.google.com/";
   	})
   	.catch((err)=>{
   		 alert(err);
-       window.location.href="./registracija.js";
+       
   	});
   }
 
   render() {
     return (
-      <div className={styles.app}>
+      <div >
         <form >
-        	<input type = "text" ref = "username" placeholder = "Username" />       	
+        	<input type = "text" ref = "username" placeholder = "Username" />
+        	<br/>    	
         	<input type = "password" ref = "password" placeholder = "Password" />
         </form>
         <button type = "button" onClick = {this.save.bind(this)} >Login </button>
-        //<button type = "button" onClick = {this.register.bind(this)} >Register </button>
+        	<h1>Tekst</h1>
       </div>
     );
   }

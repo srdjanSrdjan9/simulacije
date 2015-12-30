@@ -88,6 +88,7 @@ app.get('/getUsers', function(req, res) {
 });
 
 // user login TESTED
+
 app.post('/login', cors, function(req, res) {
    console.log('SUCCESSFULLY RECEIVED USERS INFO ' + req.body.name);
   const user = req.body;
@@ -107,7 +108,7 @@ app.post('/login', cors, function(req, res) {
     } else {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
         res.status(200).send(userObj.role);
-        // res.sendFile(path.join(__dirname, './'));
+        
         onlineUsers.push(userObj.name);
         console.log(onlineUsers[0] + ' is online now!');
       } else {
@@ -227,9 +228,9 @@ app.delete('/deleteAllUsers', function(req, res) {
 });
 
 // USER SCORE UPDATE TESTED
-app.post('/updateScore', function(req, res) {
+app.post('/updateScore', cors, function(req, res) {
   var userInfo = req.body;
-      	  var score = userInfo.score;
+      	  var score = parseInt(userInfo.score);
   onlineUsers.forEach((u) => {
     if (u === userInfo.name) {
       User.findOne({name: userInfo.name}).lean().exec((err, user) => {
@@ -244,15 +245,24 @@ app.post('/updateScore', function(req, res) {
       console.log('novi skor ' + score);
       User.update({ name: userInfo.name }, { $inc: { score: score }}, { multi: true }, (error, numAffected) => {
       	console.log('broj izmenjenih korisnika ' + numAffected.n);
-      	if (!error && numAffected !== null) {
-      		res.status(200).send('uspesno azuriran');
+      	if (!error && numAffected.n > 0){
+      		res.status(200).send(String(score));
+          console.log('poslat broj ' + score);
       	} else {
       		res.status(500).send('nije azuriran');
       	}
-      	console.log(' new score ' + score);
+      	console.log(' new score ' + parseInt(score));
       });
   	}
   });
+});
+
+app.get('/getCurrentUser', cors, function(req, res) {
+  console.log('game want user!!!');
+  if(onlineUsers.length > 0)
+res.status(200).send(onlineUsers[onlineUsers.length-1]);
+else
+res.status(404).send('niko nije logovan');
 });
 
 app.listen(port, '0.0.0.0', function onStart(err) {
