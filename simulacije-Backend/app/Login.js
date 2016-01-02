@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './App.css';
+import styles from './style.css';
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -45,7 +45,7 @@ export default class Login extends React.Component {
 
   render() {
     return (
-      <div >
+      <div class="login">
         <form >
         	<input type = "text" ref = "username" placeholder = "Username" />
         	<br/>    	
