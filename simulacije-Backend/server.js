@@ -67,7 +67,6 @@ var schema = new mongoose.Schema({
 });
 var User = mongoose.model('User', schema);
 
-// TODO:create authorization logic
 // geting all users info TESTED
 app.get('/getUsers', function(req, res) {
   console.log('REQUEST RECEIVED');
@@ -94,23 +93,22 @@ app.post('/login', cors, function(req, res) {
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
-      res.status(400).send('user je vec loginovan!');
+      res.sendStatus(400);
       console.log('ALLREADY LOGIN!!!');
       return;
     }
   });
 
-  var query = User.findOne({name: user.name}, {name: 1, password: 1});
+  var query = User.findOne({name: user.name}, { name: 1, password: 1, role: 1 });
   query.exec((err, userObj) => {
     if (err) {
       res.status(404).send('user nije registrovan');
       console.log(err);
     } else {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
-        res.status(200).send(userObj.role);
-        
+        res.status(userObj.role).send(); 
         onlineUsers.push(userObj.name);
-        console.log(onlineUsers[0] + ' is online now!');
+        console.log(onlineUsers[onlineUsers.length-1] + ' is online now!');
       } else {
         res.status(404).send('user nije loginovan!');
         console.log('404 NOT FOUND!!!');

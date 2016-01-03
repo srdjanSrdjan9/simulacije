@@ -5,13 +5,17 @@ import Registracija from './Registracija.js';
 
 class App extends React.Component{
 	render(){
-		return (
-			<div>
-			<Login />
-			<Registracija />
-			</div>
-		);
-	}
-}
+		// console.log('user role is ' + Login.props);
+		if(true)
+			return (
+				<div>
+				<Login />
+				<Registracija />
+				</div>
+				);
+			} 
+		}
+	
+
 
 ReactDOM.render(<App />, document.getElementById('root'));

@@ -4,9 +4,8 @@ import styles from './App.css';
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {test: 'foo'};
+    this.props = super(props);  
   }
-
 
   save(e){
   	e.preventDefault();
@@ -25,7 +24,8 @@ export default class Login extends React.Component {
             },
             body: data
   	}).then((response) => {
-            if (response.status >= 200 && response.status < 300) {
+            if (response.status == 0 || response.status == 1) {
+            	console.log('status is '+ response.status);
                 return response;
             } else {
                 var error = new Error("Niste uspesno logovani, registrujte se !!!");
@@ -35,10 +35,13 @@ export default class Login extends React.Component {
         })
   	.then((response) => {
   		alert("Uspesno ste ulogovani, mozete da igrate igru!");
-     window.location.href ="http://www.google.com/";
+    //window.location.href ="/game/mario/index.html";
+    fetch('http://localhost:3000/mario', {
+    	method: 'get'
+    });
   	})
   	.catch((err)=>{
-  		 alert(err);
+  		 alert('Korisnik ne postoji u bazi!');
        
   	});
   }
