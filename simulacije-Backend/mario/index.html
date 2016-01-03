@@ -16,6 +16,7 @@
 https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
     </head>
     <body>
+          <button type = "button" onClick = "logout()"} >Logout </button>
     <div id = "game">
         <script>
 
@@ -23,6 +24,29 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
 
         var username;
         var peoni;
+         function logout(){
+                $.ajax({
+                 url: "http://localhost:3000/logout",
+                 type: "POST",
+                 data: {
+                    "name":username
+                 },
+                 contentType: "application/json",
+                success: function(result,status,xhr){
+                if (xhr.status == 200) {
+                    alert('Uspesno odjavljen');
+                }
+                if (xhr.status == 404) {
+                    alert('Greska pri odjavljivanju, pokusaj ponovo');                  
+                }
+            },
+            error: function(xhr,status,error) {
+                alert('Nesto nije u redu!!! Pokusaj opet');
+                    
+                    }
+                });
+            }
+
         $.ajax({
             url: "http://localhost:3000/getCurrentUser",
             type: 'GET',
