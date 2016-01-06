@@ -1,16 +1,17 @@
-import path from 'path';
+"use strict"
 import express from 'express';
 import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from './webpack.config.js';
-
+var path = require('path');
 var bodyParser = require('body-parser');
-var Xlsx = require('xlsx-template');
+var XlsxTemplate = require('xlsx-template');
 var fs = require('fs');
 var mongodb = require('mongodb');
 var mongoose = require('mongoose');
 var onlineUsers = [];
+var async = require('async');
 
 var cors = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -162,57 +163,85 @@ app.post('/register', function(req, res) {
   });
 });
 
-// GENERATING REPORT
+// GENERATING REPORT TESTED
 app.get('/getReport', function(req, res) {
-  fs.readFile(path.join(__dirname, 'templates', 'template1.xlsx'), function(err, data) {
-    var template = new Xlsx(data);
-    var values = {
-      users: []
-    };
+  var values = {
+    user:[]
+  };
 
-    User.find({}, {name: 1, email: 1, registrationDate: 1, score: 1, role: 1}).lean().exec((err1, users) => {
+  async.series([
+    function(callback) {
+    User.find({}, {name: 1, email: 1, age:1, registrationDate: 1, score: 1, role: 1}).lean().exec((err1, users) => {
       if (err1) {
         res.status(404).send('can not get report!');
         console.log('DB ERROR');
       } else {
-        users.forEach	(user => {
-          const user1 = {};
+        users.forEach (user => {
+          var user1 = {};
           user1.name = user.name;
           user1.email = user.email;
           user1.score = user.score;
-          user1.registrationDate = user.registrationDate;
-          values.users.push(user1);
+          user1.age = user.age;
+          user1.role = user.role==1 ? 'admin' : 'user';
+          user1.registrationDate = Date(user.registrationDate);
+          values.user.push(user1);
         });
       }
     });
+    console.log('all users loaded');
+  console.log('first function excecuted');
+    callback(null, 'function getAllusers excecuted');
+    },
+      function(callback){
+                console.log('loading file started');
+   fs.readFile(path.join(__dirname, 'templates', 'template1.xlsx'), function(err, data) {
+                console.log('loading file finished');
 
-    const sheetNumber = 1;
-
+    if (err) {
+      res.sendStatus(500);
+    }
+    console.log('users for report are ' + values);
+    var template = new XlsxTemplate(data);
+    var sheetNumber = 1;
     template.substitute(sheetNumber, values);
+   var data1 = template.generate();
 
-    var data1 = template.generate();
     res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.status(200).send(new Buffer(data1, 'binary'));
-    console.log('REPORT SUCCESSFULLY SENT!');
+    console.log(new Buffer(data1, 'binary'));
+    res.send(new Buffer(data1, 'binary'));
+    console.log('REPORT SUCCESSFULLY SENT!' + values.user);
   });
-});
+           callback(null, 'function generateReport excecuted');
+      }
+    ]);
+  });
+
 
 // LOGING OUT
-app.post('/logout', function(req, res) {
-  console.log('LOGOUT REQUEST RECEIVED');
+app.post('/logout', cors, function(req, res) {
+  var found = false;
+  console.log('LOGOUT REQUEST RECEIVED '+ req.body);
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
       if (onlineUsers.indexOf(u) > -1) {
+        found = true;
         onlineUsers.splice(onlineUsers.indexOf(u), 1);
-        res.status(200).send('user je logoutovan!');
         console.log(user.name + ' vise nije online');
+        return;
       }
     }
   });
+
+  if (!found) {
+  res.sendStatus(404);
+  } else {
+  res.status(200).send('user je logoutovan!');
+
+  }
 });
 
-// DEELTING ALL USERS TESTED
+// DELETING ALL USERS TESTED
 app.delete('/deleteAllUsers', function(req, res) {
 	console.log('delete request received');
   User.find({}).remove(function(err){

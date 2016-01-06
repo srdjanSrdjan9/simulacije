@@ -1,13 +1,12 @@
 import React from 'react';
-import styles from './style.css';
+import styles from './styleee.css';
 
-export default class Login extends React.Component {
-  constructor(props) {
-    super(props);
-    this.props = super(props);  
-  }
 
-  save(e){
+var Login = React.createClass ({
+getInitialState: function () {
+	return ({role: -1});
+},
+  save: function(e){
   	e.preventDefault();
   	var username = this.refs.username.value;
   	var password = this.refs.password.value;
@@ -26,6 +25,8 @@ export default class Login extends React.Component {
   	}).then((response) => {
             if (response.status == 0 || response.status == 1) {
             	console.log('status is '+ response.status);
+            	this.setState({role: response.status});
+            	console.log(this.state.role);
                 return response;
             } else {
                 var error = new Error("Niste uspesno logovani, registrujte se !!!");
@@ -35,18 +36,16 @@ export default class Login extends React.Component {
         })
   	.then((response) => {
   		alert("Uspesno ste ulogovani, mozete da igrate igru!");
-    //window.location.href ="/game/mario/index.html";
-    fetch('http://localhost:3000/mario', {
-    	method: 'get'
-    });
+    window.location.href ="http://localhost/mario";
+    
   	})
   	.catch((err)=>{
   		 alert('Korisnik ne postoji u bazi!');
        
   	});
-  }
+  },
 
-  render() {
+  render: function(){
     return (
       <div class="login">
         <form >
@@ -59,4 +58,6 @@ export default class Login extends React.Component {
       </div>
     );
   }
-}
+})
+
+export default Login;
