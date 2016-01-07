@@ -15,6 +15,13 @@ export default class Registracija extends React.Component {
   	var password = this.refs.password.value;
     var age = this.refs.age.value;
     var email = this.refs.email.value;
+    var re_pass = this.refs.rePassword.value;
+
+    if (password !== re_pass) {
+      alert('passwordi se ne poklapaju');
+      return;
+    }
+
   	var dataSend ={
   		"name": name,
   		"password": password,
@@ -56,6 +63,8 @@ export default class Registracija extends React.Component {
         	<input type = "text" ref = "ime" placeholder = "Ime" />
           <br/>       	
         	<input type = "password" ref = "password" placeholder = "Password" />
+           <br/>
+           <input type = "password" ref = "rePassword" placeholder = "Re-type password" />
            <br/>
           <input type = "number" min = "10" max = "100" ref = "age" placeholder = "Godine" /> 
            <br/> 

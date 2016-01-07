@@ -1,4 +1,4 @@
-"use strict"
+
 import express from 'express';
 import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
@@ -94,7 +94,7 @@ app.post('/login', cors, function(req, res) {
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
-      res.sendStatus(400);
+      res.status(400).send();
       console.log('ALLREADY LOGIN!!!');
       return;
     }

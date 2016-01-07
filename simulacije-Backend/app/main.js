@@ -1,9 +1,7 @@
-require('./style.css');
 var React =require('react') ;
 var ReactDOM =  require('react-dom');
 var Login = require('./Login.js');
 var Registracija = require('./Registracija.js');
-var DataShow = require('./DataShow.js');
 var DataGrid = require('react-datagrid');
 var Sorty = require('sorty');
 var fs = require('./FileSaver.js');
@@ -50,6 +48,7 @@ getReport:function() {
 	})
 },
 	getUsers: function() {
+		console.log('saljem zahtev za korisnicima');
 		fetch('http://localhost:3000/getUsers', {
 			method: 'get'			
 		}).then((response) => {
@@ -68,7 +67,7 @@ getReport:function() {
 				var user = {};
 				user.email = u.email;
 				user.name = u.name;
-				var date = u.registrationDate.toString().split("T");
+				var date = u.registrationDate.toString().split('T');
 				user.registrationDate = date[0];
 
 				if (u.role === 1) {
@@ -88,19 +87,19 @@ getReport:function() {
 	},
 
 	render: function() {
-		console.log();
+		console.log('renderujem');
 			return (
-				<div className="login" >
+				<div>
 				<Login />
 				<Registracija />
 				<br/>
 				<DataGrid 
 				idProperty = "id"
 				dataSource={ data } 
-				columns={ columns }  />
+				columns={ columns } />
 				<br/>
-				<button onClick = {this.getUsers} >Get scores </button>
-				<button onClick = {this.getReport} >Get report </button>
+				<button onClick = {this.getUsers}>Get scores </button>
+				<button onClick = {this.getReport}>Get report </button>
 				</div>
 				);
 			 

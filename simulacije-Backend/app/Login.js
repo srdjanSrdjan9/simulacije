@@ -24,9 +24,8 @@ getInitialState: function () {
             body: data
   	}).then((response) => {
             if (response.status == 0 || response.status == 1) {
-            	console.log('status is '+ response.status);
             	this.setState({role: response.status});
-            	console.log(this.state.role);
+            	console.log(this.state.role + ' is role');
                 return response;
             } else {
                 var error = new Error("Niste uspesno logovani, registrujte se !!!");
