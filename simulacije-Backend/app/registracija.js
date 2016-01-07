@@ -8,8 +8,6 @@ export default class Registracija extends React.Component {
     super(props);
     this.state = {test: 'foo'};
   }
- 
-
 
   register(e){
   	e.preventDefault();
