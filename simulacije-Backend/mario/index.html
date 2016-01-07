@@ -23,6 +23,9 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
         //TODO implementirati logout i slanje rezultata
 
         var username;
+<<<<<<< HEAD
+        var poeni;
+=======
         var peoni;
          function logout(){
                 $.ajax({
@@ -47,6 +50,7 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 });
             }
 
+>>>>>>> b5504ebf45b3a3d7a7c6781d6536b82c5a6fce6d
         $.ajax({
             url: "http://localhost:3000/getCurrentUser",
             type: 'GET',
@@ -95,13 +99,15 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
 
               	        this.destroy();
               	    }
-              	});
-              	this.on("hit.sprite", function(collision) {
-
+              	    if(collision.obj.isA("Killer")) {
+                       this.destroy();
+                       Q.audio.play("lose-life.mp3");
+                       Q.stageScene("endGame",1, { label: "You stepped on a killer bug.\nGame Over" }); 
+                    }
               		if (collision.obj.isA("Coin")) {
               			collision.obj.destroy();
               			this.p.coins++;
-peoni = this.p.coins;
+						poeni= this.p.coins;
               			var coinsLabel = Q("UI.Text",1).items[1];
               			coinsLabel.p.label = 'Coins x '+ this.p.coins;
               			Q.audio.play("coin.mp3");
@@ -137,10 +143,10 @@ peoni = this.p.coins;
             	       Q.audio.play("lose-life.mp3");
 
             	       //will be invincible for 1 second
-            	       this.p.timeInvincible = 1;
+            	       this.p.timeInvincible = 2;
 
-            	       if(this.p.lives < 0) {
-                        peoni = this.p.coins;
+            	       if(this.p.lives == 0) {
+                        poeni = this.p.coins;
             	           this.destroy();
             	           Q.stageScene("endGame",1, { label: "Game Over" });
             	       }
@@ -178,6 +184,7 @@ peoni = this.p.coins;
                 ["GroundEnemy", {x: 8*70, y: 70, asset: "slime.png"}],
                 ["GroundEnemy", {x: 18*70, y: 120, asset: "slime.png"}],
                 ["GroundEnemy", {x: 12*70, y: 120, asset: "slime.png"}],
+                ["Killer", {x: 1650, y: 463, asset: "killer.png"}],
                 ["Coin", {x: 300, y: 100}],
                 ["Coin", {x: 360, y: 100}],
                 ["Coin", {x: 420, y: 100}],
@@ -205,7 +212,7 @@ peoni = this.p.coins;
  window.location = "";
             var data ={
                 "name":username,
-                "score":peoni
+                "score":poeni
             };
             console.log(data);
            
@@ -218,7 +225,7 @@ peoni = this.p.coins;
                  console.log('lepo primio asd');
                 console.log(xhr.status + ' rezultat '+ result);
                     if (xhr.status == 200) {
-                    alert('Izgubili ste!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ peoni);
+                    alert('Izgubili ste!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ poeni);
                         console.log('izgubio');
                     }
                 else
@@ -240,7 +247,7 @@ peoni = this.p.coins;
             window.location = "";
             var data = {
                 "name":username,
-                "score":peoni
+                "score":poeni
             };
             console.log(data);
             $.ajax({
@@ -252,7 +259,7 @@ peoni = this.p.coins;
                 console.log('lepo primio');
                 console.log(xhr.status + ' rezultat '+ result);
                     if (xhr.status == 200) 
-                    alert('Pobeda!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ peoni);
+                    alert('Pobeda!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ poeni);
                 else
                     alert('Greska pri konekciji sa bazo, niste sacuvali skor!!!');
                  // TODO redirect to login page
@@ -300,7 +307,7 @@ peoni = this.p.coins;
 
 
         //load assets
-        Q.load("tiles_map.png, player.png, level1.tmx, fly.png, slime.png, coin.png, Tree.png, coin.mp3, jump.mp3, kill-enemy.mp3, lose-life.mp3 ,level-complete.mp3", function() {
+        Q.load("tiles_map.png, player.png, level1.tmx, fly.png, slime.png, coin.png,killer.png, Tree.png, coin.mp3, jump.mp3, kill-enemy.mp3, lose-life.mp3 ,level-complete.mp3", function() {
           Q.sheet("tiles","tiles_map.png", { tilew: 70, tileh: 70});
           Q.stageScene("level1");
           Q.stageScene("gameStats",1);
@@ -400,7 +407,11 @@ peoni = this.p.coins;
 		    	   }
 		    }
 		});
-
+		Q.Sprite.extend("Killer", {
+            init: function(p) {
+                this._super(p, {asset: "killer.png"});
+            }            
+        });
 		Q.Sprite.extend("Coin", {
 		    init: function(p) {
 		        this._super(p, {asset: "coin.png"});
