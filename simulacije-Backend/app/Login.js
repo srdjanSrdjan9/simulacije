@@ -8,8 +8,8 @@ getInitialState: function () {
 },
   save: function(e){
   	e.preventDefault();
-  	var username = this.refs.username.value;
-  	var password = this.refs.password.value;
+  	// var username = this.refs.username.value;
+  	// var password = this.refs.password.value;
   	var dataSend ={
   		"name": username,
   		"password": password
@@ -48,12 +48,15 @@ getInitialState: function () {
     return (
       <div class="login">
         <form >
-        	<input type = "text" ref = "username" placeholder = "Username" />
+        	<input type = "text"  placeholder = "Username" />
         	<br/>    	
-        	<input type = "password" ref = "password" placeholder = "Password" />
+        	<input type = "password"  placeholder = "Password" />
+          </br>
         </form>
+          </br>
+         
         <button type = "button" onClick = {this.save.bind(this)} >Login </button>
-        	<h1>Tekst</h1>
+  
       </div>
     );
   }

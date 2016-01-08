@@ -90,13 +90,12 @@ app.get('/getUsers', function(req, res) {
 // user login TESTED
 
 app.post('/login', cors, function(req, res) {
-   console.log('SUCCESSFULLY RECEIVED USERS INFO ' + req.body.name);
+   console.log('SUCCESSFULLY RECEIVED USERS INFO ' + req.body);
   const user = req.body;
   onlineUsers.forEach((u) => {
     if (u === user.name) {
       res.status(400).send();
       console.log('ALLREADY LOGIN!!!');
-      return;
     }
   });
 
@@ -107,7 +106,7 @@ app.post('/login', cors, function(req, res) {
       console.log(err);
     } else {
       if (userObj !== null && userObj.name === user.name && userObj.password === user.password) {
-        res.status(userObj.role).send(); 
+        res.status(userObj.role).send(userObj.name); 
         onlineUsers.push(userObj.name);
         console.log(onlineUsers[onlineUsers.length-1] + ' is online now!');
       } else {
@@ -220,23 +219,24 @@ app.get('/getReport', function(req, res) {
 // LOGING OUT
 app.post('/logout', cors, function(req, res) {
   var found = false;
-  console.log('LOGOUT REQUEST RECEIVED '+ req.body);
-  const user = req.body;
+  console.log('LOGOUT REQUEST RECEIVED '+ req.body.name);
+  var user = req.body.name;
+  
   onlineUsers.forEach((u) => {
-    if (u === user.name) {
-      if (onlineUsers.indexOf(u) > -1) {
+    if (u === user) {
+      console.log('test');
         found = true;
         onlineUsers.splice(onlineUsers.indexOf(u), 1);
         console.log(user.name + ' vise nije online');
-        return;
-      }
+      
     }
   });
-
-  if (!found) {
-  res.sendStatus(404);
+console.log(onlineUsers);
+  if (found) {
+    res.status(200).send('user je logoutovan!');
   } else {
-  res.status(200).send('user je logoutovan!');
+  res.sendStatus(404);
+  
 
   }
 });

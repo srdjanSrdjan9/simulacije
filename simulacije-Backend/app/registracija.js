@@ -1,5 +1,5 @@
 import React from 'react';
-
+import styles from './styleee.css';
 var promise = require('promise');
 //var fetch = require('fetch');
 
@@ -58,7 +58,7 @@ export default class Registracija extends React.Component {
 
   render() {
     return (
-      <div >
+      <div class="login">
         <form >
         	<input type = "text" ref = "ime" placeholder = "Ime" />
           <br/>       	
@@ -71,6 +71,7 @@ export default class Registracija extends React.Component {
           <input type = "email" ref = "email" placeholder = "Email" />
            <br/>
         </form>
+        <br/>
         <button type = "button" onClick = {this.register.bind(this)} >Register </button>
       </div>
     );

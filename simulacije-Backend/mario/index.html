@@ -16,41 +16,13 @@
 https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
     </head>
     <body>
-          <button type = "button" onClick = "logout()"} >Logout </button>
     <div id = "game">
         <script>
 
-        //TODO implementirati logout i slanje rezultata
+        //TODO implementirati logout 
 
         var username;
-<<<<<<< HEAD
-        var poeni;
-=======
         var peoni;
-         function logout(){
-                $.ajax({
-                 url: "http://localhost:3000/logout",
-                 type: "POST",
-                 data: {
-                    "name":username
-                 },
-                 contentType: "application/json",
-                success: function(result,status,xhr){
-                if (xhr.status == 200) {
-                    alert('Uspesno odjavljen');
-                }
-                if (xhr.status == 404) {
-                    alert('Greska pri odjavljivanju, pokusaj ponovo');                  
-                }
-            },
-            error: function(xhr,status,error) {
-                alert('Nesto nije u redu!!! Pokusaj opet');
-                    
-                    }
-                });
-            }
-
->>>>>>> b5504ebf45b3a3d7a7c6781d6536b82c5a6fce6d
         $.ajax({
             url: "http://localhost:3000/getCurrentUser",
             type: 'GET',
@@ -58,18 +30,18 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 console.log('lepo primio');
                 if (xhr.status == 200) {
                     username = result;
-                    console.log(username);
                     alert('zapocni igru ' + username);
                 }
                 if (xhr.status == 404) {
-                    alert('niko nije logovan');
                  // TODO redirect to login page
-                  
+                                    window.location.href = "http://localhost:3000/";
+                      
                 }
             },
             error: function(xhr,status,error) {
-                console.log('status je ' + status + ' '+ xhr);
-                alert('niko nije loginovan');
+                console.log('status je ' + status + ' '+ xhr.status);
+                    alert('niste loginovani, igricu mozete igrati bez pamcenja rezultata!');
+                    window.location.href = "http://localhost:3000/";
                     
             }
             
@@ -91,29 +63,27 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
 
               this.add('2d, platformerControls');
 
-              	this.on("hit.sprite",function(collision) {
+                this.on("hit.sprite",function(collision) {
 
-              	    if(collision.obj.isA("Tree")) {
-              	    	Q.audio.play("level-complete.mp3");
-              	        Q.stageScene("winGame",1, { label: "You Won" });
+                    if(collision.obj.isA("Tree")) {
+                        Q.audio.play("level-complete.mp3");
+                        Q.stageScene("winGame",1, { label: "You Won" });
 
-              	        this.destroy();
-              	    }
-              	    if(collision.obj.isA("Killer")) {
-                       this.destroy();
-                       Q.audio.play("lose-life.mp3");
-                       Q.stageScene("endGame",1, { label: "You stepped on a killer bug.\nGame Over" }); 
+                        this.destroy();
                     }
-              		if (collision.obj.isA("Coin")) {
-              			collision.obj.destroy();
-              			this.p.coins++;
-						poeni= this.p.coins;
-              			var coinsLabel = Q("UI.Text",1).items[1];
-              			coinsLabel.p.label = 'Coins x '+ this.p.coins;
-              			Q.audio.play("coin.mp3");
+                });
+                this.on("hit.sprite", function(collision) {
+
+                    if (collision.obj.isA("Coin")) {
+                        collision.obj.destroy();
+                        this.p.coins++;
+peoni = this.p.coins;
+                        var coinsLabel = Q("UI.Text",1).items[1];
+                        coinsLabel.p.label = 'Coins x '+ this.p.coins;
+                        Q.audio.play("coin.mp3");
                     console.log(this.p.coins);
-              		}
-              	});
+                    }
+                });
             },
             step: function(dt) {
                 if(Q.inputs['left'] && this.p.direction == 'right') {
@@ -124,10 +94,10 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 }
                 var inAir = false;
                 if(Q.inputs['up'] && !inAir) {
-                	    Q.audio.play("jump.mp3");
-                	    inAir = true;
-                	    if(Q.inputs['left'] || Q.inputs['right'] ||Q.inputs['bottom'])
-                	    	inAir = false;
+                        Q.audio.play("jump.mp3");
+                        inAir = true;
+                        if(Q.inputs['left'] || Q.inputs['right'] ||Q.inputs['bottom'])
+                            inAir = false;
                 }
 
                 if(this.p.timeInvincible > 0) {
@@ -135,26 +105,26 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                     }
             },
             damage: function() {
-            	//only damage if not in "invincible" mode, otherwise beign next to an enemy takes all the lives inmediatly
-            	   if(!this.p.timeInvincible) {
-            	       this.p.lives--;
+                //only damage if not in "invincible" mode, otherwise beign next to an enemy takes all the lives inmediatly
+                   if(!this.p.timeInvincible) {
+                       this.p.lives--;
 
-            	       //play sound for lost life
-            	       Q.audio.play("lose-life.mp3");
+                       //play sound for lost life
+                       Q.audio.play("lose-life.mp3");
 
-            	       //will be invincible for 1 second
-            	       this.p.timeInvincible = 2;
+                       //will be invincible for 1 second
+                       this.p.timeInvincible = 1;
 
-            	       if(this.p.lives == 0) {
-                        poeni = this.p.coins;
-            	           this.destroy();
-            	           Q.stageScene("endGame",1, { label: "Game Over" });
-            	       }
-            	       else {
-            	           var livesLabel = Q("UI.Text",1).first();
-            	           livesLabel.p.label = "Lives x "+this.p.lives;
-            	       }
-            	   }
+                       if(this.p.lives < 0) {
+                        peoni = this.p.coins;
+                           this.destroy();
+                           Q.stageScene("endGame",1, { label: "Game Over" });
+                       }
+                       else {
+                           var livesLabel = Q("UI.Text",1).first();
+                           livesLabel.p.label = "Lives x "+this.p.lives;
+                       }
+                   }
             }
             
 
@@ -184,7 +154,6 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 ["GroundEnemy", {x: 8*70, y: 70, asset: "slime.png"}],
                 ["GroundEnemy", {x: 18*70, y: 120, asset: "slime.png"}],
                 ["GroundEnemy", {x: 12*70, y: 120, asset: "slime.png"}],
-                ["Killer", {x: 1650, y: 463, asset: "killer.png"}],
                 ["Coin", {x: 300, y: 100}],
                 ["Coin", {x: 360, y: 100}],
                 ["Coin", {x: 420, y: 100}],
@@ -212,7 +181,7 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
  window.location = "";
             var data ={
                 "name":username,
-                "score":poeni
+                "score":peoni
             };
             console.log(data);
            
@@ -225,7 +194,7 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                  console.log('lepo primio asd');
                 console.log(xhr.status + ' rezultat '+ result);
                     if (xhr.status == 200) {
-                    alert('Izgubili ste!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ poeni);
+                    alert('Izgubili ste!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ peoni);
                         console.log('izgubio');
                     }
                 else
@@ -247,7 +216,7 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
             window.location = "";
             var data = {
                 "name":username,
-                "score":poeni
+                "score":peoni
             };
             console.log(data);
             $.ajax({
@@ -259,9 +228,9 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 console.log('lepo primio');
                 console.log(xhr.status + ' rezultat '+ result);
                     if (xhr.status == 200) 
-                    alert('Pobeda!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ poeni);
+                    alert('Pobeda!!! Vas ukupan skor je: ' + result +' ,a skor u ovoj igri je: '+ peoni);
                 else
-                    alert('Greska pri konekciji sa bazo, niste sacuvali skor!!!');
+                    alert('Greska pri konekciji sa bazom, niste sacuvali skor!!!');
                  // TODO redirect to login page
                   
                 
@@ -307,7 +276,7 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
 
 
         //load assets
-        Q.load("tiles_map.png, player.png, level1.tmx, fly.png, slime.png, coin.png,killer.png, Tree.png, coin.mp3, jump.mp3, kill-enemy.mp3, lose-life.mp3 ,level-complete.mp3", function() {
+        Q.load("tiles_map.png, player.png, level1.tmx, fly.png, slime.png, coin.png, Tree.png, coin.mp3, jump.mp3, kill-enemy.mp3, lose-life.mp3 ,level-complete.mp3", function() {
           Q.sheet("tiles","tiles_map.png", { tilew: 70, tileh: 70});
           Q.stageScene("level1");
           Q.stageScene("gameStats",1);
@@ -319,12 +288,12 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 var entity = this.entity;
                 entity.on("bump.left,bump.right",function(collision) {
                     if(collision.obj.isA("Player")) {
-                    	collision.obj.damage();
+                        collision.obj.damage();
                     }
                 });
                 entity.on("bump.bottom",function(collision){
-                	if(collision.obj.isA("Player")) {
-                    	collision.obj.damage();
+                    if(collision.obj.isA("Player")) {
+                        collision.obj.damage();
                     }
 
                 });
@@ -356,8 +325,8 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
                 this.p.vyDirection = this.p.vy/Math.abs(this.p.vy);
                 var that = this;
                 this.on("bump.top, bump.bottom",function(collision) {
-                	that.p.vy = -Math.abs(that.p.initialVy) * that.p.vyDirection;
-                	that.p.vyDirection = that.p.vy/Math.abs(that.p.vy);
+                    that.p.vy = -Math.abs(that.p.initialVy) * that.p.vyDirection;
+                    that.p.vyDirection = that.p.vy/Math.abs(that.p.vy);
                 });
 
             },
@@ -374,58 +343,82 @@ https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js'></script>
             }
         });
 
-		//enemy that walks around
-		Q.Sprite.extend("GroundEnemy", {
-		    init: function(p) {
-		        this._super(p, {vx: -100, defaultDirection: "left"});
-		        this.add("2d, aiBounce, commonEnemy");
-		    },
-		    step: function(dt) {
-		    	var dirX = this.p.vx/Math.abs(this.p.vx);
-		    	   var ground = Q.stage().locate(this.p.x, this.p.y + this.p.h/2 + 1, Q.SPRITE_DEFAULT);
-		    	   var nextTile = Q.stage().locate(this.p.x + dirX * this.p.w/2 + dirX, this.p.y + this.p.h/2 + 1, Q.SPRITE_DEFAULT);
-
-		    	   //if we are on ground and there is a cliff
-		    	   if(!nextTile && ground) {
-		    	       if(this.p.vx > 0) {
-		    	           if(this.p.defaultDirection == "right") {
-		    	               this.p.flip = "x";
-		    	           }
-		    	           else {
-		    	               this.p.flip = false;
-		    	           }
-		    	       }
-		    	       else {
-		    	           if(this.p.defaultDirection == "left") {
-		    	               this.p.flip = "x";
-		    	           }
-		    	           else {
-		    	               this.p.flip = false;
-		    	           }
-		    	       }
-		    	       this.p.vx = -this.p.vx;
-		    	   }
-		    }
-		});
-		Q.Sprite.extend("Killer", {
+        //enemy that walks around
+        Q.Sprite.extend("GroundEnemy", {
             init: function(p) {
-                this._super(p, {asset: "killer.png"});
-            }            
+                this._super(p, {vx: -100, defaultDirection: "left"});
+                this.add("2d, aiBounce, commonEnemy");
+            },
+            step: function(dt) {
+                var dirX = this.p.vx/Math.abs(this.p.vx);
+                   var ground = Q.stage().locate(this.p.x, this.p.y + this.p.h/2 + 1, Q.SPRITE_DEFAULT);
+                   var nextTile = Q.stage().locate(this.p.x + dirX * this.p.w/2 + dirX, this.p.y + this.p.h/2 + 1, Q.SPRITE_DEFAULT);
+
+                   //if we are on ground and there is a cliff
+                   if(!nextTile && ground) {
+                       if(this.p.vx > 0) {
+                           if(this.p.defaultDirection == "right") {
+                               this.p.flip = "x";
+                           }
+                           else {
+                               this.p.flip = false;
+                           }
+                       }
+                       else {
+                           if(this.p.defaultDirection == "left") {
+                               this.p.flip = "x";
+                           }
+                           else {
+                               this.p.flip = false;
+                           }
+                       }
+                       this.p.vx = -this.p.vx;
+                   }
+            }
         });
-		Q.Sprite.extend("Coin", {
-		    init: function(p) {
-		        this._super(p, {asset: "coin.png"});
-		    }
-		});
 
-		Q.Sprite.extend("Tree", {
-		  init: function(p) {
-		    this._super(p, { asset: "Tree.png"});
-		  }
-		});
+        Q.Sprite.extend("Coin", {
+            init: function(p) {
+                this._super(p, {asset: "coin.png"});
+            }
+        });
 
+        Q.Sprite.extend("Tree", {
+          init: function(p) {
+            this._super(p, { asset: "Tree.png"});
+          }
+        });
+
+         function logout() {
+             console.log(username + ' username');
+        var json = {
+            name: username
+        }
+       
+            $.ajax({
+                url: 'http://localhost:3000/logout',
+                type: 'POST',
+                data: json,
+                success: function(result, status, xhr) {
+                    if (xhr.status == 200) {
+                        alert("Uspesno ste se odjavili! Vidimo se opet!");
+                        window.location.href = "http://localhost:3000/";
+                    } else {
+                        alert("Pokusajte ponovo sa odjavljivanjem!");
+                    }
+                },
+                error: function(error) {
+                    alert(error);
+                }
+            })
+        }
+        function home(){
+            window.location.href = "http://localhost:3000/";
+        }
 
         </script>
+        <button type = "button" onClick= "logout()" >Logout</button>
+        <button onClick="home()">Home</button>
         </div>
     </body>
 </html>

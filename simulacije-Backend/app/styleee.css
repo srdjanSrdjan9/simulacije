@@ -7,7 +7,7 @@ body { background-image: radial-gradient( cover, rgba(92,100,111,1) 0%,rgba(31,3
   border: 1px solid #42464b;
   border-radius: 6px;
   height: 257px;
-  margin: 20px auto 0;
+  margin: 200px auto 0;
   width: 298px;
 }
 .login h1 {
@@ -32,7 +32,7 @@ input[type="password"], input[type="text"] {
   box-sizing: border-box;
   color: #696969;
   height: 39px;
-  margin: 31px 0 0 29px;
+  margin: 31px 0 0 550px;
   padding-left: 37px;
   transition: box-shadow 0.3s;
   width: 240px;
@@ -79,7 +79,7 @@ input[type="checkbox"]:checked + .toggle { background-position: 0 -16px }
   transition: color .4s;
 }
 .forgot:hover { color: #3b3b3b }
-input[type="submit"] {
+input[type="button"] {
   width:240px;
   height:35px;
   display:block;
@@ -103,6 +103,9 @@ input[type="submit"] {
   border-bottom-right-radius: 5px;
   border-bottom-left-radius:5px;
   box-shadow: inset 0px 1px 0px #2ab7ec, 0px 5px 0px 0px #497a78, 0px 10px 5px #999;
+   margin-left:auto;
+    margin-right:auto;
+
 }
 
 .shadow {
@@ -116,7 +119,58 @@ input[type="submit"] {
 }
 
 
-input[type="submit"]:active {
+input[type="button"]:active {
   top:3px;
   box-shadow: inset 0px 1px 0px #2ab7ec, 0px 2px 0px 0px #31524d, 0px 5px 3px #999;
+   margin-left:auto;
+    margin-right:auto;
+
+}
+
+input[type="number"], input[type="text"] {
+  background: url('http://i.minus.com/ibhqW9Buanohx2.png') center left no-repeat, linear-gradient(top, #d6d7d7, #dee0e0);
+  border: 1px solid #a1a3a3;
+  border-radius: 4px;
+  box-shadow: 0 1px #fff;
+  box-sizing: border-box;
+  color: #696969;
+  height: 39px;
+  margin: 31px 0 0 550px;
+  padding-left: 37px;
+  transition: box-shadow 0.3s;
+  width: 240px;
+}
+input[type="number"]:focus, input[type="text"]:focus {
+  box-shadow: 0 0 4px 1px rgba(55, 166, 155, 0.3);
+  outline: 0;
+}
+.show-number {
+  display: block;
+  height: 16px;
+  margin: 26px 0 0 28px;
+  width: 87px;
+}
+input[type="email"], input[type="text"] {
+  background: url('http://i.minus.com/ibhqW9Buanohx2.png') center left no-repeat, linear-gradient(top, #d6d7d7, #dee0e0);
+  border: 1px solid #a1a3a3;
+  border-radius: 4px;
+  box-shadow: 0 1px #fff;
+  box-sizing: border-box;
+  color: #696969;
+  height: 39px;
+  margin: 31px 0 0 550px; 
+  padding-left: 37px;
+  transition: box-shadow 0.3s;
+  width: 240px;
+
+}
+input[type="email"]:focus, input[type="text"]:focus {
+  box-shadow: 0 0 4px 1px rgba(55, 166, 155, 0.3);
+  outline: 0;
+}
+.show-email {
+  display: block;
+  height: 16px;
+  margin: 26px 0 0 28px;
+  width: 87px;
 }
